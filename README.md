@@ -11,6 +11,7 @@
 ```bash
 yarn install
 node_modules/.bin/electron-rebuild
+pip install zerorpc
 ```
 
 ## Run

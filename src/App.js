@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import EncryptFolderForm from './components/EncryptForm';
+import EncryptFolderForm from './components/EncryptFolderForm';
 
 import './App.css';
 

@@ -26,11 +26,18 @@ const encryptFolder = (state, payload) => {
   const { zerorpc, folderList } = state;
   const { algo } = payload;
   console.log('RPC call encrypt_folder');
+  // TODO: Make await
   folderList.forEach(folder => {
     console.log('CALL: ', folder);
-    zerorpc.invoke('encrypt_folder', algo, folder.path, (err, res, more) => {
-      console.log(res);
-    });
+    zerorpc.invoke(
+      'encrypt_folder',
+      algo,
+      folder.path,
+      'keyfile.PEM',
+      (err, res, more) => {
+        console.log(res);
+      }
+    );
   });
   return Object.assign({}, state, {
     ...state,

@@ -13,6 +13,7 @@ class EncryptFolderForm extends React.Component {
 
     form.validateFields((err, values) => {
       if (!err) {
+        // TODO: Make cancel
         dispatch({
           type: 'rpc/encryptFolder',
           payload: {

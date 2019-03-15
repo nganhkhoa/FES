@@ -45,7 +45,7 @@ const encryptFolder = (state, payload) => {
   });
 };
 
-const rpc = (state = {}, { type, payload }) => {
+const rpcReducer = (state = {}, { type, payload }) => {
   switch (type) {
     case 'rpc/addFolder':
       return addFolder(state, payload);
@@ -58,4 +58,4 @@ const rpc = (state = {}, { type, payload }) => {
   }
 };
 
-export { rpc };
+export default rpcReducer;

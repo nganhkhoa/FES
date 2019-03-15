@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
-import * as rpc from './rpc';
+import rpcReducer from '@/reducers/rpc';
+import routeReducer from '@/reducers/route';
 
-export default combineReducers(rpc);
+export default combineReducers({ rpc: rpcReducer, route: routeReducer });

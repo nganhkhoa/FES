@@ -1,8 +1,12 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Link } from 'react-router-dom';
 
 import BasicLayout from '@/layouts/basic';
-import App from '@/App';
+
+import Home from '@/components/Home';
+import FileIndex from '@/components/FileIndex';
+import KeyManager from '@/components/KeyManager';
+import Settings from '@/components/Settings';
 
 class Routes extends React.Component {
   render() {
@@ -10,22 +14,30 @@ class Routes extends React.Component {
       <BrowserRouter>
         <Switch>
           <Route
-            exact
             path="/"
             render={props => (
               <BasicLayout
                 {...props}
                 children={
                   <div>
-                    <Route path="/" component={App} />
-                    <Route path="/encrypt" component={() => <p>Encrypt</p>} />
-                    <Route path="/decrypt" component={() => <p>Decrypt</p>} />
+                    <Route exact path="/" component={Home} />
+                    <Route path="/index" component={FileIndex} />
+                    <Route path="/keys" component={KeyManager} />
+                    <Route path="/settings" component={Settings} />
                   </div>
                 }
               />
             )}
           />
-          <Route path="*" component={<p>404</p>} status={404} />
+          <Route
+            path="*"
+            render={() => (
+              <p>
+                <Link to="/">404</Link>
+              </p>
+            )}
+            status={404}
+          />
         </Switch>
       </BrowserRouter>
     );

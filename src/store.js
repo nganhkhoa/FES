@@ -8,7 +8,8 @@ const client = new zerorpc.Client();
 client.connect('tcp://127.0.0.1:4242');
 
 const initialState = {
-  rpc: { folderList: [], zerorpc: client }
+  rpc: { folderList: [], zerorpc: client },
+  route: { current: 'Home' }
 };
 
 const store = createStore(reducers, initialState);

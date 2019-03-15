@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import EncryptFolderForm from '@/components/EncryptFolderForm';
+import EncryptFolderForm from "@/components/EncryptFolderForm";
 
-import '@/App.css';
+import "@/App.css";
 
 class App extends Component {
   render() {

@@ -1,7 +1,7 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
+import React from "react";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { Layout, Menu, Breadcrumb, Icon } from "antd";
 
 const { Content, Sider } = Layout;
 
@@ -13,15 +13,15 @@ class BasicLayout extends React.Component {
     const { currentPage } = this.props;
     return (
       <Layout>
-        <Sider width={200} style={{ background: '#fff' }}>
+        <Sider width={200} style={{ background: "#fff" }}>
           <Menu
             mode="inline"
             defaultSelectedKeys={[currentPage]}
-            style={{ height: '100%', borderRight: 0 }}
+            style={{ height: "100%", borderRight: 0 }}
             onClick={({ item, key, keyPath }) => {
               const { dispatch } = this.props;
               dispatch({
-                type: 'route/change',
+                type: "route/change",
                 payload: { page: key }
               });
             }}
@@ -52,14 +52,14 @@ class BasicLayout extends React.Component {
             </Menu.Item>
           </Menu>
         </Sider>
-        <Layout style={{ padding: '0 24px 24px' }}>
-          <Breadcrumb style={{ margin: '16px 0' }}>
+        <Layout style={{ padding: "0 24px 24px" }}>
+          <Breadcrumb style={{ margin: "16px 0" }}>
             <Breadcrumb.Item>Home</Breadcrumb.Item>
             <Breadcrumb.Item>{currentPage}</Breadcrumb.Item>
           </Breadcrumb>
           <Content
             style={{
-              background: '#fff',
+              background: "#fff",
               padding: 24,
               margin: 0,
               minHeight: 280

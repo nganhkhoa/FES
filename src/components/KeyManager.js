@@ -1,31 +1,31 @@
-import React from 'react';
-import { Table } from 'antd';
+import React from "react";
+import { Table } from "antd";
 
 class KeyManager extends React.Component {
   state = {
     columns: [
       {
         // number
-        title: 'Index',
-        dataIndex: 'id',
-        key: 'id'
+        title: "Index",
+        dataIndex: "id",
+        key: "id"
       },
       {
         // string
-        title: 'Algorithm',
-        dataIndex: 'algo',
-        key: 'algo'
+        title: "Algorithm",
+        dataIndex: "algo",
+        key: "algo"
       },
       {
         // string
-        title: 'Public Key',
-        dataIndex: 'pubkey',
-        key: 'pubkey'
+        title: "Public Key",
+        dataIndex: "pubkey",
+        key: "pubkey"
       },
       {
         // Action
-        title: 'Action',
-        key: 'action'
+        title: "Action",
+        key: "action"
       }
     ]
   };

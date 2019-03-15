@@ -1,15 +1,15 @@
-import { createStore } from 'redux';
-import reducers from './reducers';
+import { createStore } from "redux";
+import reducers from "./reducers";
 
-const remote = window.require('electron').remote;
-const zerorpc = remote.require('zerorpc');
+const remote = window.require("electron").remote;
+const zerorpc = remote.require("zerorpc");
 
 const client = new zerorpc.Client();
-client.connect('tcp://127.0.0.1:4242');
+client.connect("tcp://127.0.0.1:4242");
 
 const initialState = {
   rpc: { folderList: [], zerorpc: client },
-  route: { current: 'Home' }
+  route: { current: "Home" }
 };
 
 const store = createStore(reducers, initialState);

@@ -1,12 +1,12 @@
-import React from 'react';
-import { BrowserRouter, Route, Switch, Link } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 
-import BasicLayout from '@/layouts/basic';
+import BasicLayout from "@/layouts/basic";
 
-import Home from '@/components/Home';
-import FileIndex from '@/components/FileIndex';
-import KeyManager from '@/components/KeyManager';
-import Settings from '@/components/Settings';
+import Home from "@/components/Home";
+import FileIndex from "@/components/FileIndex";
+import KeyManager from "@/components/KeyManager";
+import Settings from "@/components/Settings";
 
 class Routes extends React.Component {
   render() {

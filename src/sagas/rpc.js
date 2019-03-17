@@ -1,4 +1,4 @@
-import { put, takeLatest, select } from 'redux-saga/effects';
+import { put, takeLatest, select } from "redux-saga/effects";
 
 function* encryptFolder({ payload }) {
   const { rpc } = yield select();
@@ -22,7 +22,7 @@ function* encryptFolder({ payload }) {
 }
 
 function* actionWatcher() {
-     yield takeLatest('rpc/encryptFolder', encryptFolder);
+  yield takeLatest("rpc/encryptFolder", encryptFolder);
 }
 
 export default actionWatcher;

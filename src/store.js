@@ -1,5 +1,8 @@
-import { createStore } from "redux";
-import reducers from "./reducers";
+import { createStore, applyMiddleware } from "redux";
+import createSagaMiddleware from "redux-saga";
+
+import reducers from "@/reducers";
+import rootSaga from "@/sagas";
 
 const remote = window.require("electron").remote;
 const zerorpc = remote.require("zerorpc");
@@ -12,7 +15,14 @@ const initialState = {
   route: { current: "Home" }
 };
 
-const store = createStore(reducers, initialState);
+const sagaMiddleware = createSagaMiddleware();
+const store = createStore(
+  reducers,
+  initialState,
+  applyMiddleware(sagaMiddleware)
+);
+
+sagaMiddleware.run(rootSaga);
 
 // const unsubscribe = store.subscribe(() => console.log(store.getState()));
 

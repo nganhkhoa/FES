@@ -22,37 +22,17 @@ const removeFolder = (state, payload) => {
   };
 };
 
-const encryptFolder = (state, payload) => {
-  const { zerorpc, folderList } = state;
-  const { algo } = payload;
-  console.log("RPC call encrypt_folder");
-  // TODO: Make await
-  folderList.forEach(folder => {
-    console.log("CALL: ", folder);
-    zerorpc.invoke(
-      "encrypt_folder",
-      algo,
-      folder.path,
-      "keyfile.PEM",
-      (err, res, more) => {
-        console.log(res);
-      }
-    );
-  });
-  return Object.assign({}, state, {
-    ...state,
-    folderList: []
-  });
-};
-
 const rpcReducer = (state = {}, { type, payload }) => {
   switch (type) {
     case "rpc/addFolder":
       return addFolder(state, payload);
     case "rpc/removeFolder":
       return removeFolder(state, payload);
-    case "rpc/encryptFolder":
-      return encryptFolder(state, payload);
+    case "rpc/clearFolder":
+      return Object.assign({}, state, {
+        ...state,
+        folderList: []
+      });
     default:
       return state;
   }

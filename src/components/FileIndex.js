@@ -1,6 +1,6 @@
 import React from "react";
-import { connect } from 'react-redux';
-import { Table, Upload, Button, Icon} from "antd";
+import { connect } from "react-redux";
+import { Table, Upload, Button, Icon } from "antd";
 
 @connect(({ rpc }) => ({
   folderList: rpc.folderList
@@ -35,14 +35,13 @@ class FileIndex extends React.Component {
     ]
   };
 
-  
   render() {
     const { dataSource } = this.props;
     const { columns } = this.state;
     const onRemove = file => {
       const { dispatch } = this.props;
       dispatch({
-        type: 'rpc/removeFolder',
+        type: "rpc/removeFolder",
         payload: {
           file
         }
@@ -51,7 +50,7 @@ class FileIndex extends React.Component {
     const beforeUpload = file => {
       const { dispatch } = this.props;
       dispatch({
-        type: 'rpc/addFolder',
+        type: "rpc/addFolder",
         payload: {
           file
         }
@@ -59,35 +58,34 @@ class FileIndex extends React.Component {
       return false;
     };
 
-    return(
+    return (
       <div>
         <Upload
           onRemove={onRemove}
           beforeUpload={beforeUpload}
           // fileList={folderList}
           directory
-          className ="col-6"
+          className="col-6"
         >
           <Button>
             <Icon type="upload" /> Choose Folder
           </Button>
         </Upload>
-        
+
         <Upload
           onRemove={onRemove}
           beforeUpload={beforeUpload}
           // fileList={folderList}
-          className = "col-6"
+          className="col-6"
         >
           <Button>
             <Icon type="upload" /> Choose File
           </Button>
         </Upload>
 
-      <br/>
-      <Table dataSource={dataSource} columns={columns}  bordered/>
+        <br />
+        <Table dataSource={dataSource} columns={columns} bordered />
       </div>
-    
     );
   }
 }

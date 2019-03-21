@@ -32,6 +32,12 @@ class BasicLayout extends React.Component {
                 Home
               </Link>
             </Menu.Item>
+            <Menu.Item key="Form">
+              <Link to="/form">
+                <Icon type="" />
+                Form
+              </Link>
+            </Menu.Item>
             <Menu.Item key="Index">
               <Link to="/index">
                 <Icon type="database" />

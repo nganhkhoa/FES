@@ -1,6 +1,6 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Button, Upload, Icon, Switch, Typography, message } from 'antd';
+import React from "react";
+import { connect } from "react-redux";
+import { Button, Upload, Icon, Switch, Typography, message } from "antd";
 
 const { Dragger } = Upload;
 const { Paragraph } = Typography;
@@ -17,12 +17,12 @@ class MainForm extends React.Component {
 
   onChange = info => {
     const status = info.file.status;
-    if (status !== 'uploading') {
+    if (status !== "uploading") {
       console.log(info.file, info.fileList);
     }
-    if (status === 'done') {
+    if (status === "done") {
       message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error') {
+    } else if (status === "error") {
       message.error(`${info.file.name} file upload failed.`);
     }
   };
@@ -30,7 +30,7 @@ class MainForm extends React.Component {
   beforeUpload = file => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rpc/addFile',
+      type: "rpc/addFile",
       payload: {
         file: file
       }
@@ -41,7 +41,7 @@ class MainForm extends React.Component {
   onRemove = file => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rpc/removeFile',
+      type: "rpc/removeFile",
       payload: {
         file: file
       }
@@ -68,18 +68,18 @@ class MainForm extends React.Component {
     const { encryptMode, keyFile } = this.state;
     if (encryptMode)
       dispatch({
-        type: 'rpc/encrypt',
+        type: "rpc/encrypt",
         payload: {
           keyFile: keyFile,
-          algo: 'RSA'
+          algo: "RSA"
         }
       });
     else
       dispatch({
-        type: 'rpc/decrypt',
+        type: "rpc/decrypt",
         payload: {
           keyFile: keyFile,
-          algo: 'RSA'
+          algo: "RSA"
         }
       });
   };
@@ -90,7 +90,7 @@ class MainForm extends React.Component {
     return (
       <div>
         <Paragraph>
-          Encrypt:{' '}
+          Encrypt:{" "}
           <Switch
             checked={encryptMode}
             onChange={status =>
@@ -101,7 +101,7 @@ class MainForm extends React.Component {
           />
         </Paragraph>
         <Paragraph>
-          Folder:{' '}
+          Folder:{" "}
           <Switch
             checked={folderMode}
             onChange={status =>
@@ -123,7 +123,7 @@ class MainForm extends React.Component {
             <Icon type="inbox" />
           </p>
           <p className="ant-upload-text">Click or drag file to this area to</p>
-          {encryptMode ? 'encrypt' : 'decrypt'}
+          {encryptMode ? "encrypt" : "decrypt"}
         </Dragger>
         <Upload
           name="keyfile"
@@ -137,7 +137,7 @@ class MainForm extends React.Component {
           </Button>
         </Upload>
         <Button type="primary" style={{ marginTop: 16 }} onClick={this.submit}>
-          {encryptMode ? 'Encrypt' : 'Decrypt'}
+          {encryptMode ? "Encrypt" : "Decrypt"}
         </Button>
       </div>
     );

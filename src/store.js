@@ -1,18 +1,18 @@
-import { createStore, applyMiddleware } from "redux";
-import createSagaMiddleware from "redux-saga";
+import { createStore, applyMiddleware } from 'redux';
+import createSagaMiddleware from 'redux-saga';
 
-import reducers from "@/reducers";
-import rootSaga from "@/sagas";
+import reducers from '@/reducers';
+import rootSaga from '@/sagas';
 
-const remote = window.require("electron").remote;
-const zerorpc = remote.require("zerorpc");
+const remote = window.require('electron').remote;
+const zerorpc = remote.require('zerorpc');
 
 const client = new zerorpc.Client();
-client.connect("tcp://127.0.0.1:4242");
+client.connect('tcp://127.0.0.1:4242');
 
 const initialState = {
   rpc: { folderList: [], zerorpc: client },
-  route: { current: "Home" }
+  route: { current: 'Home' }
 };
 
 const sagaMiddleware = createSagaMiddleware();

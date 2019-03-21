@@ -1,6 +1,6 @@
-import React from "react";
-import { connect } from "react-redux";
-import { Table, Upload, Button, Icon } from "antd";
+import React from 'react';
+import { connect } from 'react-redux';
+import { Table, Upload, Button, Icon } from 'antd';
 
 @connect(({ rpc }) => ({
   folderList: rpc.folderList
@@ -10,27 +10,27 @@ class FileIndex extends React.Component {
     columns: [
       {
         // string
-        title: "File",
-        dataIndex: "file",
-        key: "file"
+        title: 'File',
+        dataIndex: 'file',
+        key: 'file'
       },
       {
         // bool
-        title: "Folder",
-        dataIndex: "folder",
-        key: "folder"
+        title: 'Folder',
+        dataIndex: 'folder',
+        key: 'folder'
       },
       {
         // key index
-        title: "Key",
-        dataIndex: "key",
-        key: "key"
+        title: 'Key',
+        dataIndex: 'key',
+        key: 'key'
       },
       {
         // encrypted status
-        title: "Encrypted",
-        dataIndex: "encrypted",
-        key: "encrypted"
+        title: 'Encrypted',
+        dataIndex: 'encrypted',
+        key: 'encrypted'
       }
     ]
   };
@@ -41,7 +41,7 @@ class FileIndex extends React.Component {
     const onRemove = file => {
       const { dispatch } = this.props;
       dispatch({
-        type: "rpc/removeFolder",
+        type: 'rpc/removeFolder',
         payload: {
           file
         }
@@ -50,7 +50,7 @@ class FileIndex extends React.Component {
     const beforeUpload = file => {
       const { dispatch } = this.props;
       dispatch({
-        type: "rpc/addFolder",
+        type: 'rpc/addFolder',
         payload: {
           file
         }

@@ -5,21 +5,26 @@ import os
 from RSA import RSACipher
 
 
+def algorithmFactory(algo):
+    if algo == 'RSA':
+        return RSACipher()
+    else:
+        return None
+
+
 class RPC(object):
     def generate_key(algo):
-        if algo == 'RSA':
-            rsa = RSACipher()
-            pub, priv = rsa.generate_key()
-            return [pub, priv]
-        elif algo == 'AES':
-            return ['BLA']
-        else:
-            print("Not supported algorithm")
+        algoInstance = algorithmFactory(algo)
+        if (algoInstance is None):
             return "Unsupported algorithm"
+        return algoInstance.generate_key()
 
     def encrypt(self, algo, file, keyfile):
+        algoInstance = algorithmFactory(algo)
+        if (algoInstance is None):
+            return "Not a valid algorithm"
         if (os.path.isfile(file)):
-            self.rsa.encrypt(file, 'public_key.txt', file + '_encrypted')
+            algoInstance.encrypt(file, 'public_key.txt', file + '_encrypted')
             print("Encrypted file")
             return "Encrypted file"
         elif (os.path.isdir(file)):
@@ -27,15 +32,21 @@ class RPC(object):
             print("Encrypt folder {} using {}".format(folder, algo))
             archive = shutil.make_archive(folder, 'zip', folder)
             print("Created zip file of folder")
-            self.rsa.encrypt(archive, 'private_key.txt', folder + '_encrypted')
+            algoInstance.encrypt(
+                archive,
+                'private_key.txt',
+                folder + '_encrypted')
             print("Encrypted zip file of folder")
             return "Encrypted zip file of folder"
         else:
             return "File is not found"
 
     def decrypt(self, algo, file, keyfile):
+        algoInstance = algorithmFactory(algo)
+        if (algoInstance is None):
+            return "Not a valid algorithm"
         if (os.path.isfile(file)):
-            self.rsa.decrypt(file, 'private_key.txt', file + '_decrypted')
+            algoInstance.decrypt(file, 'private_key.txt', file + '_decrypted')
             print("Decrypted file")
             return "Decrypted file"
         else:

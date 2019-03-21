@@ -1,18 +1,31 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, Upload, Icon, Switch, Typography, message } from 'antd';
+import {
+  Button,
+  Collapse,
+  Upload,
+  Icon,
+  Switch,
+  Typography,
+  Modal,
+  message
+} from 'antd';
 
 const { Dragger } = Upload;
 const { Paragraph } = Typography;
+const { Panel } = Collapse;
 
 @connect(({ rpc }) => ({
-  fileList: rpc.fileList
+  fileList: rpc.fileList,
+  pubkey: rpc.pubkey,
+  prikey: rpc.prikey
 }))
 class MainForm extends React.Component {
   state = {
     encryptMode: true,
     folderMode: false,
-    keyFile: []
+    keyFile: [],
+    showModal: false
   };
 
   onChange = info => {
@@ -63,6 +76,16 @@ class MainForm extends React.Component {
     return false;
   };
 
+  createKey = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'rpc/createKey',
+      payload: {
+        algo: 'RSA'
+      }
+    });
+  };
+
   submit = () => {
     const { dispatch } = this.props;
     const { encryptMode, keyFile } = this.state;
@@ -84,9 +107,21 @@ class MainForm extends React.Component {
       });
   };
 
+  showModal = () => {
+    this.setState({
+      showModal: true
+    });
+  };
+
+  hideModal = () => {
+    this.setState({
+      showModal: false
+    });
+  };
+
   render() {
-    const { encryptMode, folderMode, keyFile } = this.state;
-    const { fileList } = this.props;
+    const { encryptMode, folderMode, keyFile, showModal } = this.state;
+    const { fileList, pubkey, prikey } = this.props;
     return (
       <div>
         <Paragraph>
@@ -136,9 +171,39 @@ class MainForm extends React.Component {
             <Icon type="upload" /> Select Key File
           </Button>
         </Upload>
+
+        <Paragraph>
+          <Button onClick={this.createKey}>
+            <Icon type="upload" /> Create key
+          </Button>
+          <Button onClick={this.showModal}>
+            <Icon type="upload" /> Show keys
+          </Button>
+        </Paragraph>
+
         <Button type="primary" style={{ marginTop: 16 }} onClick={this.submit}>
           {encryptMode ? 'Encrypt' : 'Decrypt'}
         </Button>
+
+        <Modal
+          title="Basic Modal"
+          visible={showModal}
+          onOk={this.hideModal}
+          onCancel={this.hideModal}
+        >
+          <Collapse accordion defaultActiveKey={['1']}>
+            <Panel header="Public Key" key="1">
+              <Paragraph ellipsis={{ rows: 3, expandable: true }} copyable>
+                {pubkey}
+              </Paragraph>
+            </Panel>
+            <Panel header="Private Key" key="2">
+              <Paragraph ellipsis={{ rows: 3, expandable: true }} copyable>
+                {prikey}
+              </Paragraph>
+            </Panel>
+          </Collapse>
+        </Modal>
       </div>
     );
   }

@@ -33,6 +33,12 @@ const rpcReducer = (state = {}, { type, payload }) => {
         ...state,
         fileList: []
       });
+    case 'rpc/newKey':
+      return Object.assign({}, state, {
+        ...state,
+        pubkey: payload.pubkey,
+        prikey: payload.prikey
+      });
     default:
       return state;
   }

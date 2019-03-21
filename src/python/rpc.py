@@ -13,7 +13,7 @@ def algorithmFactory(algo):
 
 
 class RPC(object):
-    def generate_key(algo):
+    def generate_key(self, algo):
         algoInstance = algorithmFactory(algo)
         if (algoInstance is None):
             return "Unsupported algorithm"

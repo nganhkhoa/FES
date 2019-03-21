@@ -1,4 +1,12 @@
-import { put, takeLatest, call, fork, select, all } from 'redux-saga/effects';
+import {
+  put,
+  takeLatest,
+  call,
+  cps,
+  fork,
+  select,
+  all
+} from 'redux-saga/effects';
 
 const rpc_callback = (err, res, more) => {
   if (!more) {
@@ -52,9 +60,26 @@ function* decryptFile({ payload }) {
   yield put({ type: 'rpc/clearFile' });
 }
 
+function* createKey({ payload }) {
+  const { rpc } = yield select();
+  const { zerorpc } = rpc;
+  const { algo } = payload;
+  console.log('RPC call create key');
+  const key = yield cps(zerorpc.invoke, 'generate_key', algo);
+  console.log(key);
+  yield put({
+    type: 'rpc/newKey',
+    payload: {
+      pubkey: key[0],
+      prikey: key[1]
+    }
+  });
+}
+
 function* actionWatcher() {
   yield takeLatest('rpc/encrypt', encryptFile);
   yield takeLatest('rpc/decrypt', decryptFile);
+  yield takeLatest('rpc/createKey', createKey);
 }
 
 export default actionWatcher;

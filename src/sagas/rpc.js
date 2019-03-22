@@ -8,6 +8,8 @@ import {
   all
 } from 'redux-saga/effects';
 
+import { message } from 'antd';
+
 const rpc_callback = (err, res, more) => {
   if (!more) {
     console.log(res);
@@ -64,14 +66,22 @@ function* createKey({ payload }) {
   const { rpc } = yield select();
   const { zerorpc } = rpc;
   const { algo } = payload;
+  let key = [];
+
   console.log('RPC call create key');
-  const key = yield cps(zerorpc.invoke, 'generate_key', algo);
-  console.log(key);
+  try {
+    key = yield cps(zerorpc.invoke, 'generate_key', algo);
+    console.log(key);
+    message.success('Create new key success');
+  } catch (err) {
+    console.log(err);
+    message.error('Error create new key');
+  }
   yield put({
     type: 'rpc/newKey',
     payload: {
-      pubkey: key[0],
-      prikey: key[1]
+      key: key,
+      success: key.length > 0
     }
   });
 }

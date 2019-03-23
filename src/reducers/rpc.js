@@ -36,8 +36,8 @@ const rpcReducer = (state = {}, { type, payload }) => {
     case 'rpc/newKey':
       return Object.assign({}, state, {
         ...state,
-        pubkey: payload.pubkey,
-        prikey: payload.prikey
+        key: payload.key,
+        createKeySuccess: payload.success
       });
     default:
       return state;

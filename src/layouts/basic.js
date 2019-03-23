@@ -11,12 +11,12 @@ const { Content, Sider } = Layout;
 class BasicLayout extends React.Component {
   render() {
     const { currentPage } = this.props;
+    console.log(currentPage);
     return (
       <Layout>
         <Sider width={200} style={{ background: '#fff' }}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={[currentPage]}
             style={{ height: '100%', borderRight: 0 }}
             onClick={({ item, key, keyPath }) => {
               const { dispatch } = this.props;
@@ -34,8 +34,14 @@ class BasicLayout extends React.Component {
             </Menu.Item>
             <Menu.Item key="Form">
               <Link to="/form">
-                <Icon type="" />
-                Form
+                <Icon type="form" />
+                Main Form
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="KeyForm">
+              <Link to="/keyform">
+                <Icon type="form" />
+                Create Key
               </Link>
             </Menu.Item>
             <Menu.Item key="Index">

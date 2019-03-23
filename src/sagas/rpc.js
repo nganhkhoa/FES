@@ -8,6 +8,8 @@ import {
   all
 } from 'redux-saga/effects';
 
+import { message } from 'antd';
+
 const rpc_callback = (err, res, more) => {
   if (!more) {
     console.log(res);
@@ -19,21 +21,14 @@ const rpc_callback = (err, res, more) => {
 
 function* encryptFile({ payload }) {
   const { rpc } = yield select();
-  const { zerorpc, fileList } = rpc;
-  const { algo } = payload;
+  const { zerorpc } = rpc;
+  const { algo, fileList, key } = payload;
 
   console.log('RPC call encrypt');
   yield all(
     fileList.map(file => {
       console.log('CALL: ', file);
-      return fork(
-        zerorpc.invoke,
-        'encrypt',
-        algo,
-        file.path,
-        'keyfile.PEM',
-        rpc_callback
-      );
+      return fork(zerorpc.invoke, 'encrypt', algo, file, key, rpc_callback);
     })
   );
   yield put({ type: 'rpc/clearFile' });
@@ -41,20 +36,13 @@ function* encryptFile({ payload }) {
 
 function* decryptFile({ payload }) {
   const { rpc } = yield select();
-  const { zerorpc, fileList } = rpc;
-  const { algo } = payload;
+  const { zerorpc } = rpc;
+  const { algo, fileList, key } = payload;
   console.log('RPC call decrypt');
   yield all(
     fileList.map(file => {
       console.log('CALL: ', file);
-      return fork(
-        zerorpc.invoke,
-        'decrypt',
-        algo,
-        file.path,
-        'keyfile.PEM',
-        rpc_callback
-      );
+      return fork(zerorpc.invoke, 'decrypt', algo, file, key, rpc_callback);
     })
   );
   yield put({ type: 'rpc/clearFile' });
@@ -64,14 +52,22 @@ function* createKey({ payload }) {
   const { rpc } = yield select();
   const { zerorpc } = rpc;
   const { algo } = payload;
+  let key = [];
+
   console.log('RPC call create key');
-  const key = yield cps(zerorpc.invoke, 'generate_key', algo);
-  console.log(key);
+  try {
+    key = yield cps(zerorpc.invoke, 'generate_key', algo);
+    console.log(key);
+    message.success('Create new key success');
+  } catch (err) {
+    console.log(err);
+    message.error('Error create new key');
+  }
   yield put({
     type: 'rpc/newKey',
     payload: {
-      pubkey: key[0],
-      prikey: key[1]
+      key: key,
+      success: key.length > 0
     }
   });
 }

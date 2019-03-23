@@ -34,17 +34,27 @@ class KeyForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        const { name, algorithm } = values;
+        const { name, algorithm, passphrase } = values;
         this.setState({
           name,
           algorithm
         });
-        dispatch({
-          type: 'rpc/createKey',
-          payload: {
-            algo: algorithm
-          }
-        });
+
+        console.log(passphrase);
+        if (
+          ['AES'].includes(algorithm) &&
+          (passphrase === '' || passphrase === undefined)
+        ) {
+          message.error('Passphrase is required');
+        } else {
+          dispatch({
+            type: 'rpc/createKey',
+            payload: {
+              algo: algorithm,
+              key: passphrase
+            }
+          });
+        }
       }
     });
   };
@@ -156,23 +166,35 @@ class KeyForm extends React.Component {
               valuePropName: 'algorithm',
               rules: [{ required: true, message: 'Please select an algorithm' }]
             })(
-              <Select placeholder="Select an algorithm">
+              <Select
+                placeholder="Select an algorithm"
+                onChange={val => this.setState({ algorithm: val })}
+              >
                 <Option value="RSA">RSA</Option>
-                <Option value="AES" disabled>
-                  AES
-                </Option>
+                <Option value="AES">AES</Option>
                 <Option value="ECC" disabled>
                   ECC
                 </Option>
               </Select>
             )}
           </Form.Item>
+
+          <Form.Item label="passphrase">
+            {getFieldDecorator('passphrase', {})(
+              <Input
+                disabled={!['AES'].includes(this.state.algorithm)}
+                style={{ width: '100%' }}
+              />
+            )}
+          </Form.Item>
+
           <Form.Item>
             <Button type="primary" htmlType="submit">
               Create Key
             </Button>
           </Form.Item>
         </Form>
+
         <Button type="primary" onClick={this.showModal}>
           View created key
         </Button>

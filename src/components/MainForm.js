@@ -6,6 +6,7 @@ import {
   Upload,
   Checkbox,
   Icon,
+  Input,
   Form,
   Switch,
   Select,
@@ -26,7 +27,8 @@ const { Option } = Select;
 class MainForm extends React.Component {
   state = {
     keyFile: [],
-    fileList: []
+    fileList: [],
+    algorithm: ''
   };
 
   onRemove = file => {
@@ -71,16 +73,33 @@ class MainForm extends React.Component {
     const { fileList, keyFile } = this.state;
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        const { algo, encrypt } = values;
+        const { algo, encrypt, passphrase } = values;
         const type = encrypt ? 'rpc/encrypt' : 'rpc/decrypt';
-        dispatch({
-          type,
-          payload: {
-            fileList: fileList.map(f => f.path),
-            key: keyFile[0].path,
-            algo
-          }
-        });
+        let key;
+
+        if (
+          passphrase !== '' &&
+          passphrase !== undefined &&
+          keyFile.length === 1
+        ) {
+          message.error('Only key file or passphrase should be in use');
+        } else if (
+          (passphrase === '' || passphrase === undefined) &&
+          keyFile.length === 0
+        ) {
+          message.error('A passphrase or keyfile is required');
+        } else {
+          if (keyFile.length === 0) key = passphrase;
+          else key = keyFile[0].path;
+          dispatch({
+            type,
+            payload: {
+              fileList: fileList.map(f => f.path),
+              key,
+              algo
+            }
+          });
+        }
       }
     });
   };
@@ -125,11 +144,12 @@ class MainForm extends React.Component {
               }
             ]
           })(
-            <Select placeholder="Select an algorithm">
+            <Select
+              placeholder="Select an algorithm"
+              onChange={val => this.setState({ algorithm: val })}
+            >
               <Option value="RSA">RSA</Option>
-              <Option value="AES" disabled>
-                AES
-              </Option>
+              <Option value="AES">AES</Option>
               <Option value="ECC" disabled>
                 ECC
               </Option>
@@ -138,14 +158,7 @@ class MainForm extends React.Component {
         </Form.Item>
 
         <Form.Item>
-          {getFieldDecorator('keyFile', {
-            rules: [
-              {
-                required: true,
-                message: 'Please select key file to encrypt/decrypt'
-              }
-            ]
-          })(
+          {getFieldDecorator('keyFile', {})(
             <Upload
               beforeUpload={this.onAddKey}
               onRemove={this.onRemoveKey}
@@ -155,6 +168,15 @@ class MainForm extends React.Component {
                 Add Key File
               </Button>
             </Upload>
+          )}
+        </Form.Item>
+
+        <Form.Item label="passphrase">
+          {getFieldDecorator('passphrase', {})(
+            <Input
+              disabled={!['AES'].includes(this.state.algorithm)}
+              style={{ width: '100%' }}
+            />
           )}
         </Form.Item>
 

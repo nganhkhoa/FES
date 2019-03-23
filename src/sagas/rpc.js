@@ -24,6 +24,7 @@ function* encryptFile({ payload }) {
   const { zerorpc } = rpc;
   const { algo, fileList, key } = payload;
 
+  console.log(key);
   console.log('RPC call encrypt');
   yield all(
     fileList.map(file => {
@@ -38,6 +39,7 @@ function* decryptFile({ payload }) {
   const { rpc } = yield select();
   const { zerorpc } = rpc;
   const { algo, fileList, key } = payload;
+
   console.log('RPC call decrypt');
   yield all(
     fileList.map(file => {
@@ -51,12 +53,12 @@ function* decryptFile({ payload }) {
 function* createKey({ payload }) {
   const { rpc } = yield select();
   const { zerorpc } = rpc;
-  const { algo } = payload;
+  const { algo, key: passphrase } = payload;
   let key = [];
 
   console.log('RPC call create key');
   try {
-    key = yield cps(zerorpc.invoke, 'generate_key', algo);
+    key = yield cps(zerorpc.invoke, 'generate_key', algo, passphrase);
     console.log(key);
     message.success('Create new key success');
   } catch (err) {

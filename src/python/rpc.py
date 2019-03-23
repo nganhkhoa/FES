@@ -3,6 +3,7 @@ import shutil
 import os
 
 from RSA import RSACipher
+from AES import AESCipher
 
 from RPCError import InvalidAlgorithm
 
@@ -10,16 +11,18 @@ from RPCError import InvalidAlgorithm
 def algorithmFactory(algo):
     if algo == 'RSA':
         return RSACipher()
+    elif algo == 'AES':
+        return AESCipher()
     else:
         return None
 
 
 class RPC(object):
-    def generate_key(self, algo):
+    def generate_key(self, algo, passphrase=None):
         algoInstance = algorithmFactory(algo)
         if (algoInstance is None):
             raise InvalidAlgorithm(algo, "Unsupported algorithm")
-        return algoInstance.generate_key()
+        return algoInstance.generate_key(passphrase)
 
     def encrypt(self, algo, file, keyfile):
         algoInstance = algorithmFactory(algo)

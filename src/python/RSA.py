@@ -8,17 +8,10 @@ class RSACipher:
     def __init__(self):
         self.status = (False, 0)
 
-    def generate_key(self):
+    def generate_key(self, passphrase):
         key = RSA.generate(2048)
         pub = key.publickey().exportKey('PEM')
         pri = key.exportKey('PEM')
-        # public_file = open('public_key.txt', 'w')
-        # private_file = open('private_key.txt', 'w')
-        # public_file.write(pub.decode())
-        # private_file.write(pri.decode())
-        # public_file.close()
-        # private_file.close()
-
         return pub.decode(), pri.decode()
 
     def encrypt(self, cipher_file, key_file, output):

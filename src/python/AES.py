@@ -3,6 +3,7 @@ import hashlib
 import sys
 import os
 
+
 class AESCipher:
     def __init__(self):
         self.iv = 'This is an IV456'

@@ -158,9 +158,11 @@ class KeyForm extends React.Component {
             })(
               <Select placeholder="Select an algorithm">
                 <Option value="RSA">RSA</Option>
-                <Option value="AES">AES</Option>
-                <Option value="BLA" disabled>
-                  BLA
+                <Option value="AES" disabled>
+                  AES
+                </Option>
+                <Option value="ECC" disabled>
+                  ECC
                 </Option>
               </Select>
             )}

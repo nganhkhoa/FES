@@ -21,21 +21,14 @@ const rpc_callback = (err, res, more) => {
 
 function* encryptFile({ payload }) {
   const { rpc } = yield select();
-  const { zerorpc, fileList } = rpc;
-  const { algo } = payload;
+  const { zerorpc } = rpc;
+  const { algo, fileList, key } = payload;
 
   console.log('RPC call encrypt');
   yield all(
     fileList.map(file => {
       console.log('CALL: ', file);
-      return fork(
-        zerorpc.invoke,
-        'encrypt',
-        algo,
-        file.path,
-        'keyfile.PEM',
-        rpc_callback
-      );
+      return fork(zerorpc.invoke, 'encrypt', algo, file, key, rpc_callback);
     })
   );
   yield put({ type: 'rpc/clearFile' });
@@ -43,20 +36,13 @@ function* encryptFile({ payload }) {
 
 function* decryptFile({ payload }) {
   const { rpc } = yield select();
-  const { zerorpc, fileList } = rpc;
-  const { algo } = payload;
+  const { zerorpc } = rpc;
+  const { algo, fileList, key } = payload;
   console.log('RPC call decrypt');
   yield all(
     fileList.map(file => {
       console.log('CALL: ', file);
-      return fork(
-        zerorpc.invoke,
-        'decrypt',
-        algo,
-        file.path,
-        'keyfile.PEM',
-        rpc_callback
-      );
+      return fork(zerorpc.invoke, 'decrypt', algo, file, key, rpc_callback);
     })
   );
   yield put({ type: 'rpc/clearFile' });

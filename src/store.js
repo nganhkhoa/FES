@@ -11,7 +11,7 @@ const client = new zerorpc.Client();
 client.connect('tcp://127.0.0.1:4242');
 
 const initialState = {
-  rpc: { fileList: [], zerorpc: client, key: [], createKeySuccess: false },
+  rpc: { zerorpc: client, key: [], createKeySuccess: false },
   route: { current: 'Home' }
 };
 

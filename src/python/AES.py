@@ -23,7 +23,7 @@ class AESCipher:
             _key = hashlib.sha256(key.encode()).digest()
         cipher = AES.new(_key, AES.MODE_CFB, self.iv)
         while True:
-            a = file.read(256)
+            a = file.read(128)
             if not a:
                 break
             cipher_text = cipher.encrypt(a)

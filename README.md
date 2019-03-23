@@ -5,6 +5,8 @@
 - node
 - yarn
 - python3
+- libzmq3-dev
+- autopep8
 
 ## Build
 

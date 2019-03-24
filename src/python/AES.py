@@ -9,7 +9,7 @@ class AESCipher:
         self.iv = 'This is an IV456'
 
     def generate_key(self, key):
-        return [hashlib.sha256(key.encode()).digest()]
+        return [hashlib.sha256(key.encode()).hexdigest()]
 
     def encrypt(self, file_path, key, output):
         file = open(file_path, 'rb')
@@ -17,8 +17,7 @@ class AESCipher:
         if os.path.isdir(key):
             raise NameError('Key can not a folder')
         elif os.path.isfile(key):
-            fkey = open(key, 'r')
-            _key = fkey.read()
+            _key = bytes.fromhex(open(key, 'r').read())
         else:
             _key = hashlib.sha256(key.encode()).digest()
         cipher = AES.new(_key, AES.MODE_CFB, self.iv)
@@ -31,7 +30,6 @@ class AESCipher:
 
         file.close()
         out_file.close()
-        fkey.close()
 
     def decrypt(self, file_path, key, output):
         file = open(file_path, 'rb')
@@ -39,8 +37,7 @@ class AESCipher:
         if os.path.isdir(key):
             raise NameError('Key can not a folder')
         elif os.path.isfile(key):
-            fkey = open(key, 'r')
-            _key = fkey.read()
+            _key = bytes.fromhex(open(key, 'r').read())
         else:
             _key = hashlib.sha256(key.encode()).digest()
         cipher = AES.new(_key, AES.MODE_CFB, self.iv)
@@ -52,4 +49,3 @@ class AESCipher:
             out_file.write(cipher_text)
         file.close()
         out_file.close()
-        fkey.close()

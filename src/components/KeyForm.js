@@ -15,6 +15,8 @@ const { Paragraph } = Typography;
 const { Panel } = Collapse;
 const { Option } = Select;
 
+const requirePassphrase = algo => ['AES', 'Blowfish'].includes(algo);
+
 @connect(({ rpc }) => ({
   newkey: rpc.key,
   newkeySuccess: rpc.createKeySuccess,
@@ -42,7 +44,7 @@ class KeyForm extends React.Component {
 
         console.log(passphrase);
         if (
-          ['AES'].includes(algorithm) &&
+          requirePassphrase(algorithm) &&
           (passphrase === '' || passphrase === undefined)
         ) {
           message.error('Passphrase is required');
@@ -172,6 +174,7 @@ class KeyForm extends React.Component {
               >
                 <Option value="RSA">RSA</Option>
                 <Option value="AES">AES</Option>
+                <Option value="Blowfish">Blowfish</Option>
                 <Option value="ECC" disabled>
                   ECC
                 </Option>
@@ -180,9 +183,16 @@ class KeyForm extends React.Component {
           </Form.Item>
 
           <Form.Item label="passphrase">
-            {getFieldDecorator('passphrase', {})(
+            {getFieldDecorator('passphrase', {
+              rules: [
+                {
+                  required: requirePassphrase(algorithm),
+                  message: 'The algorithm chosen requires a passphrase'
+                }
+              ]
+            })(
               <Input
-                disabled={!['AES'].includes(this.state.algorithm)}
+                disabled={!requirePassphrase(algorithm)}
                 style={{ width: '100%' }}
               />
             )}

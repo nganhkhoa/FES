@@ -2,6 +2,7 @@ import os
 from Crypto.Cipher import Blowfish
 from Crypto import Random
 
+
 class BlowfishCipher:
     # def __init__(self, key, iv=None):
     #     self.__cipher = Blowfish.new(key, Blowfish.MODE_CBC, self.__iv)
@@ -34,45 +35,46 @@ class BlowfishCipher:
         outfile.write(encode)
 
         while True:
-	    	chunk = infile.read(chunk_size)
-	    	if not chunk:
-		        break
-	    	else:
-	    		if len(chunk) != chunk_size:
-	    			encode = cipher.encrypt(self.__add_pad(chunk))
-		        else:
-		        	encode = cipher.encrypt(chunk)
+            chunk = infile.read(chunk_size)
+            if not chunk:
+                break
+            else:
+                if len(chunk) != chunk_size:
+                    encode = cipher.encrypt(self.__add_pad(chunk))
+                else:
+                    encode = cipher.encrypt(chunk)
 
-			outfile.write(encode)
-		
+                outfile.write(encode)
+
         infile.close()
-        outfile.close() 
+        outfile.close()
 
     def decrypt(self, key, encryptedFile, output):
         """ Return a decrypted chunk. """
         chunk_size = 720
         bs = Blowfish.block_size
 
-        ifile = open(encryptedFile,'rb')
-        ofile = open(output,'wb')
+        ifile = open(encryptedFile, 'rb')
+        ofile = open(output, 'wb')
 
         iv = ifile.read(bs)
         cipher = Blowfish.new(key, Blowfish.MODE_CBC, iv)
 
         while True:
-        	chunk = ifile.read(chunk_size)
-        	encode = ''
-        	if not chunk:
-        		break
-        	else:
-        		if len(chunk) != chunk_size:
-        			encode = self.__del_pad(cipher.decrypt(chunk))
-        		else:
-        			encode = cipher.decrypt(chunk)
-        	ofile.write(encode)
+            chunk = ifile.read(chunk_size)
+            encode = ''
+            if not chunk:
+                break
+            else:
+                if len(chunk) != chunk_size:
+                    encode = self.__del_pad(cipher.decrypt(chunk))
+                else:
+                    encode = cipher.decrypt(chunk)
+            ofile.write(encode)
 
         ifile.close()
         ofile.close()
+
 
 a = BlowfishCipher()
 a.encrypt('12345678', 'testfile.zip', 'test.enc')

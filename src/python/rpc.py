@@ -4,6 +4,7 @@ import os
 
 from RSA import RSACipher
 from AES import AESCipher
+from Blowfish import BlowfishCipher
 
 from RPCError import InvalidAlgorithm
 
@@ -13,6 +14,8 @@ def algorithmFactory(algo):
         return RSACipher()
     elif algo == 'AES':
         return AESCipher()
+    elif algo == 'Blowfish':
+        return BlowfishCipher()
     else:
         return None
 

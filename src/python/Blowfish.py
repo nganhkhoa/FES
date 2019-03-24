@@ -1,11 +1,10 @@
-import os
-from Crypto.Cipher import Blowfish
 from Crypto import Random
+from Crypto.Cipher import Blowfish
+
+import os
 
 
 class BlowfishCipher:
-    # def __init__(self, key, iv=None):
-    #     self.__cipher = Blowfish.new(key, Blowfish.MODE_CBC, self.__iv)
 
     def __add_pad(self, chunk):
         """ Return a chunk with padding added (ISO 10126). """
@@ -19,15 +18,22 @@ class BlowfishCipher:
         """ Return a chunk with padding removed (ISO 10126). """
         return chunk[:-int(chunk[-1:])]
 
-    def encrypt(self, key, originalFile, output):
+    def generate_key(self, passphrase):
+        return [passphrase]
+
+    def encrypt(self, originalFile, key, output):
         infile = open(originalFile, 'rb')
         outfile = open(output, 'wb')
-        # encode = ''
+        if (os.path.isfile):
+            key = open(key).read()
+        else:
+            pass
+
         chunk_size = 720
         iv = Random.new().read(Blowfish.block_size)
-        chunk = infile.read(chunk_size)
         cipher = Blowfish.new(key, Blowfish.MODE_CBC, iv)
 
+        chunk = infile.read(chunk_size)
         if len(chunk) != chunk_size:
             encode = iv + cipher.encrypt(self.__add_pad(chunk))
         else:
@@ -38,21 +44,23 @@ class BlowfishCipher:
             chunk = infile.read(chunk_size)
             if not chunk:
                 break
+            elif len(chunk) != chunk_size:
+                encode = cipher.encrypt(self.__add_pad(chunk))
             else:
-                if len(chunk) != chunk_size:
-                    encode = cipher.encrypt(self.__add_pad(chunk))
-                else:
-                    encode = cipher.encrypt(chunk)
-
-                outfile.write(encode)
+                encode = cipher.encrypt(chunk)
+            outfile.write(encode)
 
         infile.close()
         outfile.close()
 
-    def decrypt(self, key, encryptedFile, output):
+    def decrypt(self, encryptedFile, key, output):
         """ Return a decrypted chunk. """
         chunk_size = 720
         bs = Blowfish.block_size
+        if (os.path.isfile):
+            key = open(key).read()
+        else:
+            pass
 
         ifile = open(encryptedFile, 'rb')
         ofile = open(output, 'wb')
@@ -65,18 +73,18 @@ class BlowfishCipher:
             encode = ''
             if not chunk:
                 break
+            elif len(chunk) != chunk_size:
+                encode = self.__del_pad(cipher.decrypt(chunk))
             else:
-                if len(chunk) != chunk_size:
-                    encode = self.__del_pad(cipher.decrypt(chunk))
-                else:
-                    encode = cipher.decrypt(chunk)
+                encode = cipher.decrypt(chunk)
             ofile.write(encode)
 
         ifile.close()
         ofile.close()
 
 
-a = BlowfishCipher()
-a.encrypt('12345678', 'testfile.zip', 'test.enc')
-a.decrypt('12345678', 'test.enc', 'hbeat12345.zip')
-print('done')
+if __name__ == "__main__":
+    a = BlowfishCipher()
+    a.encrypt('testfile.zip', '12345678', 'test.enc')
+    a.decrypt('test.enc', '12345678', 'hbeat12345.zip')
+    print('done')

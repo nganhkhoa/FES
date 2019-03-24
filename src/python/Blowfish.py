@@ -24,7 +24,7 @@ class BlowfishCipher:
     def encrypt(self, originalFile, key, output):
         infile = open(originalFile, 'rb')
         outfile = open(output, 'wb')
-        if (os.path.isfile):
+        if (os.path.isfile(key)):
             key = open(key).read()
         else:
             pass
@@ -57,7 +57,7 @@ class BlowfishCipher:
         """ Return a decrypted chunk. """
         chunk_size = 720
         bs = Blowfish.block_size
-        if (os.path.isfile):
+        if (os.path.isfile(key)):
             key = open(key).read()
         else:
             pass

@@ -17,7 +17,7 @@ class AESCipher:
         if os.path.isdir(key):
             raise NameError('Key can not a folder')
         elif os.path.isfile(key):
-          _key = bytes.fromhex(open(key, 'r').read())
+            _key = bytes.fromhex(open(key, 'r').read())
         else:
             _key = hashlib.sha256(key.encode()).digest()
         cipher = AES.new(_key, AES.MODE_CFB, self.iv)

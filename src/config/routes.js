@@ -23,7 +23,7 @@ class Routes extends React.Component {
                 {...props}
                 children={
                   <div>
-                    <Route exact path="/" component={Home} />
+                    <Route exact path="/" component={MainForm} />
                     <Route exact path="/form" component={MainForm} />
                     <Route exact path="/directform" component={DirectForm} />
                     <Route exact path="/keyform" component={KeyForm} />

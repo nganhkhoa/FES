@@ -41,15 +41,15 @@ class BasicLayout extends React.Component {
             <Menu.Item key="Form">
               <Link to="/form">
                 <Icon type="form" />
-                File Form
+                Encrypt/Decrypt
               </Link>
             </Menu.Item>
-            <Menu.Item key="FolderForm">
+            {/* <Menu.Item key="FolderForm">
               <Link to="/directform">
                 <Icon type="form" />
                 Folder Form
               </Link>
-            </Menu.Item>
+            </Menu.Item> */}
 
             {/* <Menu.Item key="Index">
               <Link to="/index">

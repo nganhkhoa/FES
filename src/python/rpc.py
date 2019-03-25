@@ -44,6 +44,7 @@ class RPC(object):
                 archive,
                 keyfile,
                 folder + '_encrypted')
+            # os.remove(archive)
             print("Encrypted zip file of folder")
             return "Encrypted zip file of folder"
         else:

@@ -16,7 +16,7 @@ import {
   message
 } from 'antd';
 
-const { Dragger } = Upload;
+// const { Upload } = Upload;
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
@@ -30,23 +30,41 @@ class MainForm extends React.Component {
   state = {
     keyFile: [],
     fileList: [],
+    folderList: [],
     algorithm: ''
   };
 
-  onRemove = file => {
-    this.setState(state => {
-      const index = state.fileList.indexOf(file);
-      const newFileList = state.fileList.slice();
-      newFileList.splice(index, 1);
-      return {
-        fileList: newFileList
-      };
-    });
+  onRemove = (file, isFolder) => {
+    if (isFolder) {
+      this.setState(state => {
+        const index = state.folderList.indexOf(file);
+        const newFolderList = state.folderList.slice();
+        newFolderList.splice(index, 1);
+        return {
+          folderList: newFolderList
+        };
+      });
+    } else {
+      this.setState(state => {
+        const index = state.fileList.indexOf(file);
+        const newFileList = state.fileList.slice();
+        newFileList.splice(index, 1);
+        return {
+          fileList: newFileList
+        };
+      });
+    }
   };
-  beforeUpload = file => {
-    this.setState(state => ({
-      fileList: [...state.fileList, file]
-    }));
+  beforeUpload = (file, isFolder) => {
+    if (isFolder) {
+      this.setState(state => ({
+        folderList: [...state.folderList, file]
+      }));
+    } else {
+      this.setState(state => ({
+        fileList: [...state.fileList, file]
+      }));
+    }
     return false;
   };
 
@@ -72,19 +90,24 @@ class MainForm extends React.Component {
     e.preventDefault();
 
     const { dispatch } = this.props;
-    const { fileList, keyFile } = this.state;
+    const { fileList, keyFile, folderList } = this.state;
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const { algo, encrypt, passphrase } = values;
         const type = encrypt ? 'rpc/encrypt' : 'rpc/decrypt';
         let key;
 
-        if (requirePassphrase(algo)) key = passphrase;
-        else key = keyFile[0].path;
+        // if (requirePassphrase(algo)) key = passphrase;
+        key = keyFile[0].path;
+        console.log(key);
+        console.log(fileList);
+        console.log(folderList);
         dispatch({
           type,
           payload: {
-            fileList: fileList.map(f => f.path),
+            fileList: fileList
+              .map(f => f.path)
+              .concat(folderList.map(f => f.path)),
             key,
             algo
           }
@@ -94,34 +117,41 @@ class MainForm extends React.Component {
   };
 
   render() {
-    const { algorithm, keyFile, fileList } = this.state;
+    const { algorithm, keyFile, fileList, folderList } = this.state;
     const { getFieldDecorator } = this.props.form;
 
     return (
       <Form onSubmit={this.submit}>
         <Form.Item>
-          {getFieldDecorator('fileList', {
-            rules: [
-              {
-                required: true,
-                message: 'Please select file to encrypt/decrypt'
-              }
-            ]
-          })(
-            <Dragger
+          {getFieldDecorator('fileList', {})(
+            <Upload
               name="file"
               multiple={true}
-              beforeUpload={this.beforeUpload}
-              onRemove={this.onRemove}
+              beforeUpload={file => this.beforeUpload(file, false)}
+              onRemove={file => this.onRemove(file, false)}
               fileList={fileList}
             >
-              <p className="ant-upload-drag-icon">
-                <Icon type="inbox" />
-              </p>
-              <p className="ant-upload-text">
-                Click or drag file to this area to encrypt
-              </p>
-            </Dragger>
+              <Button>
+                <Icon type="upload" /> Select File
+              </Button>
+            </Upload>
+          )}
+        </Form.Item>
+
+        <Form.Item>
+          {getFieldDecorator('folderList', {})(
+            <Upload
+              name="file"
+              multiple={true}
+              beforeUpload={file => this.beforeUpload(file, true)}
+              onRemove={file => this.onRemove(file, true)}
+              fileList={folderList}
+              directory={true}
+            >
+              <Button>
+                <Icon type="upload" /> Select Folder
+              </Button>
+            </Upload>
           )}
         </Form.Item>
 
@@ -147,12 +177,19 @@ class MainForm extends React.Component {
             </Select>
           )}
         </Form.Item>
+        {/* <Form.Item
+          label="Add key file"
+        >
+          {getFieldDecorator('switch', { valuePropName: 'checked' })(
+            <Switch />
+          )}
+        </Form.Item> */}
 
         <Form.Item>
           {getFieldDecorator('keyFile', {
             rules: [
               {
-                required: !requirePassphrase(algorithm),
+                required: true,
                 message: 'The algorithm chosen required a key file'
               }
             ]
@@ -161,12 +198,11 @@ class MainForm extends React.Component {
               beforeUpload={this.onAddKey}
               onRemove={this.onRemoveKey}
               fileList={keyFile}
-              disabled={requirePassphrase(algorithm)}
             >
               <Button
                 type="primary"
                 style={{ marginTop: 16 }}
-                disabled={requirePassphrase(algorithm)}
+                // disabled={requirePassphrase(algorithm)}
               >
                 Add Key File
               </Button>
@@ -174,21 +210,21 @@ class MainForm extends React.Component {
           )}
         </Form.Item>
 
-        <Form.Item label="passphrase">
+        {/* <Form.Item label="passphrase">
           {getFieldDecorator('passphrase', {
             rules: [
               {
-                required: requirePassphrase(algorithm),
+                // required: requirePassphrase(algorithm),
                 message: 'The algorithm chosen requires a passphrase'
               }
             ]
           })(
             <Input
-              disabled={!requirePassphrase(algorithm)}
+              // disabled={!requirePassphrase(algorithm)}
               style={{ width: '100%' }}
             />
           )}
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item>
           {getFieldDecorator('encrypt', {

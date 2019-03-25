@@ -26,25 +26,32 @@ class BasicLayout extends React.Component {
               });
             }}
           >
-            <Menu.Item key="Home">
+            {/* <Menu.Item key="Home">
               <Link to="/">
                 <Icon type="home" />
                 Home
               </Link>
-            </Menu.Item>
-            <Menu.Item key="Form">
-              <Link to="/form">
-                <Icon type="form" />
-                Main Form
-              </Link>
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Item key="KeyForm">
               <Link to="/keyform">
                 <Icon type="form" />
                 Create Key
               </Link>
             </Menu.Item>
-            <Menu.Item key="Index">
+            <Menu.Item key="Form">
+              <Link to="/form">
+                <Icon type="form" />
+                Encrypt/Decrypt
+              </Link>
+            </Menu.Item>
+            {/* <Menu.Item key="FolderForm">
+              <Link to="/directform">
+                <Icon type="form" />
+                Folder Form
+              </Link>
+            </Menu.Item> */}
+
+            {/* <Menu.Item key="Index">
               <Link to="/index">
                 <Icon type="database" />
                 File Index
@@ -61,12 +68,12 @@ class BasicLayout extends React.Component {
                 <Icon type="setting" />
                 Settings
               </Link>
-            </Menu.Item>
+            </Menu.Item> */}
           </Menu>
         </Sider>
         <Layout style={{ padding: '0 24px 24px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
+            {/* <Breadcrumb.Item>Home</Breadcrumb.Item> */}
             <Breadcrumb.Item>{currentPage}</Breadcrumb.Item>
           </Breadcrumb>
           <Content

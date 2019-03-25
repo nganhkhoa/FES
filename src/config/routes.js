@@ -8,6 +8,7 @@ import FileIndex from '@/components/FileIndex';
 import KeyManager from '@/components/KeyManager';
 import Settings from '@/components/Settings';
 import MainForm from '@/components/MainForm';
+import DirectForm from '@/components/DirectForm';
 import KeyForm from '@/components/KeyForm';
 
 class Routes extends React.Component {
@@ -22,8 +23,9 @@ class Routes extends React.Component {
                 {...props}
                 children={
                   <div>
-                    <Route exact path="/" component={Home} />
+                    <Route exact path="/" component={MainForm} />
                     <Route exact path="/form" component={MainForm} />
+                    <Route exact path="/directform" component={DirectForm} />
                     <Route exact path="/keyform" component={KeyForm} />
                     <Route path="/index" component={FileIndex} />
                     <Route path="/keys" component={KeyManager} />

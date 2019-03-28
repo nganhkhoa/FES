@@ -19,7 +19,7 @@
     "start": "concurrently --kill-others 'yarn run start-react' 'yarn run start-electron'",
     "start-electron": "electron .",
     "start-react": "cross-env BROWSER=none react-app-rewired start",
-    "start-python": "python src/python/rpc.py",
+    "python": "python src/python/rpc.py",
     "build-react": "react-app-rewired build",
     "build-electron": "electron build",
     "test": "react-app-rewired test --env=jsdom",

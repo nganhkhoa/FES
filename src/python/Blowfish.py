@@ -2,6 +2,7 @@ from Crypto import Random
 from Crypto.Cipher import Blowfish
 
 import os
+import gevent
 
 
 class BlowfishCipher:
@@ -40,6 +41,9 @@ class BlowfishCipher:
             encode = iv + cipher.encrypt(chunk)
         outfile.write(encode)
 
+        num_block = os.path.getsize(originalFile) // chunk_size
+        round = 0
+
         while True:
             chunk = infile.read(chunk_size)
             if not chunk:
@@ -49,6 +53,8 @@ class BlowfishCipher:
             else:
                 encode = cipher.encrypt(chunk)
             outfile.write(encode)
+            yield "{}/{}".format(round, num_block)
+            round += 1
 
         infile.close()
         outfile.close()
@@ -68,6 +74,9 @@ class BlowfishCipher:
         iv = ifile.read(bs)
         cipher = Blowfish.new(key, Blowfish.MODE_CBC, iv)
 
+        num_block = os.path.getsize(encryptedFile) // chunk_size
+        round = 0
+
         while True:
             chunk = ifile.read(chunk_size)
             encode = ''
@@ -78,13 +87,8 @@ class BlowfishCipher:
             else:
                 encode = cipher.decrypt(chunk)
             ofile.write(encode)
+            yield "{}/{}".format(round, num_block)
+            round += 1
 
         ifile.close()
         ofile.close()
-
-
-if __name__ == "__main__":
-    a = BlowfishCipher()
-    a.encrypt('testfile.zip', '12345678', 'test.enc')
-    a.decrypt('test.enc', '12345678', 'hbeat12345.zip')
-    print('done')

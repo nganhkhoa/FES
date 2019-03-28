@@ -2,29 +2,22 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
-  Collapse,
   Upload,
   Checkbox,
   Icon,
   Input,
   Form,
-  Switch,
   Select,
-  Typography,
-  Modal,
-  Tabs,
   message
 } from 'antd';
 
-// const { Upload } = Upload;
-const { Paragraph } = Typography;
-const { Panel } = Collapse;
-const { TabPane } = Tabs;
 const { Option } = Select;
 
 const requirePassphrase = algo => ['AES', 'Blowfish'].includes(algo);
 
-@connect(({ rpc }) => ({}))
+@connect(({ rpc }) => ({
+  running: rpc.running
+}))
 @Form.create()
 class MainForm extends React.Component {
   state = {
@@ -93,8 +86,7 @@ class MainForm extends React.Component {
     const { fileList, keyFile, folderList } = this.state;
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        const { algo, encrypt, passphrase } = values;
-        const type = encrypt ? 'rpc/encrypt' : 'rpc/decrypt';
+        const { algo, encrypt } = values;
         let key;
 
         // if (requirePassphrase(algo)) key = passphrase;
@@ -103,13 +95,14 @@ class MainForm extends React.Component {
         console.log(fileList);
         console.log(folderList);
         dispatch({
-          type,
+          type: 'rpc/invoke',
           payload: {
             fileList: fileList
               .map(f => f.path)
               .concat(folderList.map(f => f.path)),
             key,
-            algo
+            algo,
+            task: encrypt ? 'encrypt' : 'decrypt'
           }
         });
       }
@@ -117,7 +110,8 @@ class MainForm extends React.Component {
   };
 
   render() {
-    const { algorithm, keyFile, fileList, folderList } = this.state;
+    const { running } = this.props;
+    const { keyFile, fileList, folderList } = this.state;
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -210,22 +204,6 @@ class MainForm extends React.Component {
           )}
         </Form.Item>
 
-        {/* <Form.Item label="passphrase">
-          {getFieldDecorator('passphrase', {
-            rules: [
-              {
-                // required: requirePassphrase(algorithm),
-                message: 'The algorithm chosen requires a passphrase'
-              }
-            ]
-          })(
-            <Input
-              // disabled={!requirePassphrase(algorithm)}
-              style={{ width: '100%' }}
-            />
-          )}
-        </Form.Item> */}
-
         <Form.Item>
           {getFieldDecorator('encrypt', {
             valuePropName: 'encrypt'
@@ -233,8 +211,8 @@ class MainForm extends React.Component {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Submit
+          <Button type="primary" htmlType="submit" loading={running > 0}>
+            {running > 0 ? `${running} task(s) running` : `Submit`}
           </Button>
         </Form.Item>
       </Form>

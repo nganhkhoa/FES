@@ -1,7 +1,8 @@
 from Crypto.Cipher import AES
-import hashlib
-import sys
+
 import os
+import hashlib
+import gevent
 
 
 class AESCipher:
@@ -20,6 +21,10 @@ class AESCipher:
             _key = bytes.fromhex(open(key, 'r').read())
         else:
             _key = hashlib.sha256(key.encode()).digest()
+
+        num_block = os.path.getsize(file_path) // 128
+        round = 0
+
         cipher = AES.new(_key, AES.MODE_CFB, self.iv)
         while True:
             a = file.read(128)
@@ -27,6 +32,8 @@ class AESCipher:
                 break
             cipher_text = cipher.encrypt(a)
             out_file.write(cipher_text)
+            yield "{}/{}".format(round, num_block)
+            round += 1
 
         file.close()
         out_file.close()
@@ -40,6 +47,10 @@ class AESCipher:
             _key = bytes.fromhex(open(key, 'r').read())
         else:
             _key = hashlib.sha256(key.encode()).digest()
+
+        num_block = os.path.getsize(file_path) // 128
+        round = 0
+
         cipher = AES.new(_key, AES.MODE_CFB, self.iv)
         while True:
             a = file.read(128)
@@ -47,5 +58,8 @@ class AESCipher:
                 break
             cipher_text = cipher.decrypt(a)
             out_file.write(cipher_text)
+            yield "{}/{}".format(round, num_block)
+            round += 1
+
         file.close()
         out_file.close()

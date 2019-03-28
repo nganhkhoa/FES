@@ -2,6 +2,7 @@ from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 
 import os
+import gevent
 
 
 class RSACipher:
@@ -48,13 +49,14 @@ class RSACipher:
         round = 0
 
         while True:
-            # print("{}: Round {} of {}".format(cipher_file, round, num_block))
-            round += 1
             a = cf.read(block_size)
             if not a:
                 break
             cipher_text = cipher.encrypt(a)
             ef.write(cipher_text)
+            yield "{}/{}".format(round, num_block)
+            round += 1
+
         cf.close()
         kf.close()
         ef.close()
@@ -71,13 +73,14 @@ class RSACipher:
         round = 0
 
         while True:
-            # print("{}: Round {} of {}".format(cipher_file, round, num_block))
-            round += 1
             a = cf.read(block_size)
             if not a:
                 break
             plain_text = cipher.decrypt(a)
             ef.write(plain_text)
+            yield "{}/{}".format(round, num_block)
+            round += 1
+
         cf.close()
         kf.close()
         ef.close()

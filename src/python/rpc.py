@@ -1,6 +1,8 @@
 import zerorpc
 import shutil
 import os
+import gevent
+import signal
 
 from RSA import RSACipher
 from AES import AESCipher
@@ -17,52 +19,67 @@ def algorithmFactory(algo):
     elif algo == 'Blowfish':
         return BlowfishCipher()
     else:
-        return None
+        raise InvalidAlgorithm(algo, "Unsupported algorithm")
 
 
 class RPC(object):
     def generate_key(self, algo, passphrase=None):
         algoInstance = algorithmFactory(algo)
-        if (algoInstance is None):
-            raise InvalidAlgorithm(algo, "Unsupported algorithm")
         return algoInstance.generate_key(passphrase)
 
+    @zerorpc.stream
     def encrypt(self, algo, file, keyfile):
+        print("encrypt {} using {} with {}".format(file, algo, keyfile))
         algoInstance = algorithmFactory(algo)
-        if (algoInstance is None):
-            raise InvalidAlgorithm(algo, "Not a valid algorithm")
-        if (os.path.isfile(file)):
-            algoInstance.encrypt(file, keyfile, file + '_encrypted')
-            print("Encrypted file")
-            return "Encrypted file"
-        elif (os.path.isdir(file)):
+        if (os.path.isdir(file)):
             folder = file
             print("Encrypt folder {} using {}".format(folder, algo))
             archive = shutil.make_archive(folder, 'zip', folder)
             print("Created zip file of folder")
-            algoInstance.encrypt(
-                archive,
-                keyfile,
-                folder + '_encrypted')
-            # os.remove(archive)
-            print("Encrypted zip file of folder")
-            return "Encrypted zip file of folder"
-        else:
-            raise InvalidAlgorithm(algo, "File is not found")
+            file = archive
+        for percentage in algoInstance.encrypt(
+                file, keyfile, file + '_encrypted'):
+            # yield percentage
+            gevent.sleep(0)
+        if (os.path.isdir(file)):
+            os.remove(archive)
+        yield "Encrypted file"
 
+    @zerorpc.stream
     def decrypt(self, algo, file, keyfile):
+        print("decrypt {} using {} with {}".format(file, algo, keyfile))
         algoInstance = algorithmFactory(algo)
-        if (algoInstance is None):
-            raise InvalidAlgorithm(algo, "Not a valid algorithm")
-        if (os.path.isfile(file)):
-            algoInstance.decrypt(file, keyfile, file + '_decrypted')
-            print("Decrypted file")
-            return "Decrypted file"
-        else:
+        if (not os.path.isfile(file)):
             raise InvalidAlgorithm(algo, "File is not found")
+        for percentage in algoInstance.decrypt(
+                file, keyfile, file + '_decrypted'):
+            # yield percentage
+            gevent.sleep(0)
+        print("Decrypted file")
+        yield "Decrypted file"
+
+
+INTERRUPTS = 0
+
+
+def build_handler(server):
+    def handler(signum=-1, frame=None):
+        global INTERRUPTS
+        INTERRUPTS += 1
+        print(
+            'Signal handler called with signal %s for the %s time' %
+            (signum, INTERRUPTS))
+        if INTERRUPTS > 2:
+            print("Raising due to repeat interrupts")
+            raise KeyboardInterrupt
+        server.close()
+        # server.stop()
+    return handler
 
 
 s = zerorpc.Server(RPC(), pool_size=5)
 s.bind("tcp://0.0.0.0:4242")
 print("Server running on port 4242")
+gevent.signal(signal.SIGINT, build_handler(s))
 s.run()
+# gevent.joinall([gevent.spawn(s.run)])

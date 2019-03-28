@@ -11,11 +11,15 @@ import {
 import { message } from 'antd';
 
 const rpc_callback = (err, res, more) => {
+  if (err) {
+    console.log(err);
+    message.error('Error calling RPC');
+    return;
+  }
   if (!more) {
-    console.log(res);
-    console.log('done');
+    message.success('Done');
   } else {
-    console.log(res);
+    // console.log(res);
   }
 };
 

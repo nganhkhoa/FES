@@ -39,6 +39,16 @@ const rpcReducer = (state = {}, { type, payload }) => {
         key: payload.key,
         createKeySuccess: payload.success
       });
+    case 'rpc/addRunning':
+      return Object.assign({}, state, {
+        ...state,
+        running: state.running + 1
+      });
+    case 'rpc/removeRunning':
+      return Object.assign({}, state, {
+        ...state,
+        running: state.running - 1
+      });
     default:
       return state;
   }

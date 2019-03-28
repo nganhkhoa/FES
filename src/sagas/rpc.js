@@ -1,57 +1,84 @@
 import {
   put,
+  delay,
   takeLatest,
+  take,
   call,
   cps,
   fork,
-  select,
-  all
+  select
 } from 'redux-saga/effects';
-
+import { eventChannel, END } from 'redux-saga';
 import { message } from 'antd';
 
-const rpc_callback = (err, res, more) => {
-  if (err) {
-    console.log(err);
-    message.error('Error calling RPC');
-    return;
-  }
-  if (!more) {
-    message.success('Done');
-  } else {
-    // console.log(res);
-  }
-};
+function _invokeOne(zerorpc, task, algo, file, key) {
+  return eventChannel(function(emitter) {
+    // zerorpc.invoke(task, algo, file, key, (err, res, more) => {
+    zerorpc.invoke(task, algo, file, key, (err, res, more) => {
+      if (err) {
+        emitter(new Error(err));
+        return;
+      }
+      if (!more) {
+        emitter(END);
+        // !more on stream wont give res
+        return;
+      }
+      emitter(res);
+    });
 
-function* encryptFile({ payload }) {
-  const { rpc } = yield select();
-  const { zerorpc } = rpc;
-  const { algo, fileList, key } = payload;
-
-  console.log(key);
-  console.log('RPC call encrypt');
-  yield all(
-    fileList.map(file => {
-      console.log('CALL: ', file);
-      return fork(zerorpc.invoke, 'encrypt', algo, file, key, rpc_callback);
-    })
-  );
-  yield put({ type: 'rpc/clearFile' });
+    return () => {};
+  });
 }
 
-function* decryptFile({ payload }) {
+function* invokeOne(zerorpc, task, algo, file, key) {
+  const chan = yield call(_invokeOne, zerorpc, task, algo, file, key);
+  let errorOccurred = false;
+  let res;
+
+  yield put({ type: 'rpc/addRunning' });
+  try {
+    while (true) {
+      res = yield take(chan);
+      console.log(res);
+      // future: Loading percentage
+    }
+  } catch (err) {
+    console.log(err);
+    message.error('Error occured when calling RPC');
+    errorOccurred = true;
+  } finally {
+    yield put({ type: 'rpc/removeRunning' });
+    if (!errorOccurred) {
+      const msg = res.split(':');
+      message.success(msg[0] + ' ' + msg[1]);
+    }
+  }
+}
+
+function* invoke({ payload }) {
   const { rpc } = yield select();
   const { zerorpc } = rpc;
-  const { algo, fileList, key } = payload;
+  const { algo, fileList, key, task } = payload;
 
-  console.log('RPC call decrypt');
-  yield all(
-    fileList.map(file => {
-      console.log('CALL: ', file);
-      return fork(zerorpc.invoke, 'decrypt', algo, file, key, rpc_callback);
-    })
-  );
-  yield put({ type: 'rpc/clearFile' });
+  let processed = 0;
+  const effects = fileList.map(file => {
+    return fork(invokeOne, zerorpc, task, algo, file, key);
+  });
+
+  // call on queue, so that it wont make rpc call unable to handle heartbeat
+  while (processed !== fileList.length) {
+    const {
+      rpc: { running }
+    } = yield select();
+    if (running < 5) {
+      // 5 is our pool_size
+      yield effects[processed];
+      processed += 1;
+    }
+    // wait store update running
+    yield delay(1000);
+  }
 }
 
 function* createKey({ payload }) {
@@ -79,8 +106,7 @@ function* createKey({ payload }) {
 }
 
 function* actionWatcher() {
-  yield takeLatest('rpc/encrypt', encryptFile);
-  yield takeLatest('rpc/decrypt', decryptFile);
+  yield takeLatest('rpc/invoke', invoke);
   yield takeLatest('rpc/createKey', createKey);
 }
 

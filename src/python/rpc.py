@@ -4,6 +4,8 @@ import os
 import gevent
 import signal
 
+from gevent import monkey
+
 from RSA import RSACipher
 from AES import AESCipher
 from Blowfish import BlowfishCipher
@@ -24,13 +26,19 @@ def algorithmFactory(algo):
 
 class RPC(object):
     def generate_key(self, algo, passphrase=None):
+        print("Generate key {} with {}".format(algo, passphrase))
         algoInstance = algorithmFactory(algo)
         return algoInstance.generate_key(passphrase)
 
     @zerorpc.stream
     def encrypt(self, algo, file, keyfile):
-        print("encrypt {} using {} with {}".format(file, algo, keyfile))
+        first_res = "Encrypt {} using {} with {}".format(file, algo, keyfile)
+        print(first_res)
+        yield first_res
         algoInstance = algorithmFactory(algo)
+
+        folder = None
+        outfile = file + '_encrypted'
         if (os.path.isdir(file)):
             folder = file
             print("Encrypt folder {} using {}".format(folder, algo))
@@ -38,25 +46,32 @@ class RPC(object):
             print("Created zip file of folder")
             file = archive
         for percentage in algoInstance.encrypt(
-                file, keyfile, file + '_encrypted'):
+                file, keyfile, outfile):
             # yield percentage
             gevent.sleep(0)
-        if (os.path.isdir(file)):
+        if (folder is not None):
             os.remove(archive)
-        yield "Encrypted file"
+        msg = "Encrypted:{}:{}:{}:{}".format(file, algo, keyfile, outfile)
+        print(msg)
+        yield msg
 
     @zerorpc.stream
     def decrypt(self, algo, file, keyfile):
-        print("decrypt {} using {} with {}".format(file, algo, keyfile))
+        first_res = "Decrypt {} using {} with {}".format(file, algo, keyfile)
+        print(first_res)
+        yield first_res
         algoInstance = algorithmFactory(algo)
+
+        outfile = file + '_decrypted'
         if (not os.path.isfile(file)):
             raise InvalidAlgorithm(algo, "File is not found")
         for percentage in algoInstance.decrypt(
-                file, keyfile, file + '_decrypted'):
+                file, keyfile, outfile):
             # yield percentage
             gevent.sleep(0)
-        print("Decrypted file")
-        yield "Decrypted file"
+        msg = "Decrypted:{}:{}:{}:{}".format(file, algo, keyfile, outfile)
+        print(msg)
+        yield msg
 
 
 INTERRUPTS = 0
@@ -73,13 +88,12 @@ def build_handler(server):
             print("Raising due to repeat interrupts")
             raise KeyboardInterrupt
         server.close()
-        # server.stop()
     return handler
 
 
+monkey.patch_all()
 s = zerorpc.Server(RPC(), pool_size=5)
 s.bind("tcp://0.0.0.0:4242")
 print("Server running on port 4242")
 gevent.signal(signal.SIGINT, build_handler(s))
 s.run()
-# gevent.joinall([gevent.spawn(s.run)])

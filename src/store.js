@@ -7,11 +7,11 @@ import rootSaga from '@/sagas';
 const remote = window.require('electron').remote;
 const zerorpc = remote.require('zerorpc');
 
-const client = new zerorpc.Client();
+const client = new zerorpc.Client({});
 client.connect('tcp://127.0.0.1:4242');
 
 const initialState = {
-  rpc: { zerorpc: client, key: [], createKeySuccess: false },
+  rpc: { zerorpc: client, key: [], createKeySuccess: false, running: 0 },
   route: { current: 'Home' }
 };
 
